@@ -1,0 +1,21 @@
+#!/bin/sh
+PHP_PROJECT_DIR=$(dirname $GIT_DIR)
+PHP_CS_FIXER=$PHP_PROJECT_DIR/bin/php-cs-fixer
+echo $PHP_CS_FIXER
+if [ -x "$PHP_CS_FIXER" ]; then
+    echo "php-cs-fixer pre-commit hook start"
+    FILES=` git status --porcelain | grep -e '^[AM]\(.*\).php$' | cut -c 3- | tr '\n' ' '`
+	if [ -z "$FILES" ]
+	then
+		  echo "php files not found."
+	else
+        CONFIG_FILE=$PHP_PROJECT_DIR/.php_cs
+        if [ -f "$CONFIG_FILE" ]; then
+            $PHP_CS_FIXER fix --config=$PHP_PROJECT_DIR/.php_cs --verbose $FILES
+        else
+            $PHP_CS_FIXER fix --verbose $FILES
+        fi
+        git add ${FILES}
+	fi
+    echo "php-cs-fixer pre-commit hook finish"
+fi

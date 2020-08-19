@@ -1,0 +1,10 @@
+#!/bin/sh
+for HOOK in $(find $(dirname $(realpath "$0"))/pre-commit.d -type f ); do
+    $HOOK
+    CODE=$?
+    if [ $CODE != 0 ]; then
+        echo "$HOOK returned non-zero: $CODE, abort commit"
+        exit $CODE
+    fi
+done
+exit 0
